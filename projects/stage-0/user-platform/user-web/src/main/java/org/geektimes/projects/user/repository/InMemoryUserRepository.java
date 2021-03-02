@@ -1,5 +1,7 @@
 package org.geektimes.projects.user.repository;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.geektimes.projects.user.domain.User;
 
 import java.util.*;
@@ -12,10 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class InMemoryUserRepository implements UserRepository {
 
-    private Map<Long, User> repository = new ConcurrentHashMap<>();
+    private static AtomicLong ids = new AtomicLong(1);
+
+    private static Map<Long, User> repository = new ConcurrentHashMap<>();
 
     @Override
     public boolean save(User user) {
+        user.setId(ids.getAndIncrement());
         return repository.put(user.getId(), user) == null;
     }
 
@@ -42,7 +47,7 @@ public class InMemoryUserRepository implements UserRepository {
                 .filter(user -> Objects.equals(userName, user.getName())
                         && Objects.equals(password, user.getPassword()))
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
     @Override

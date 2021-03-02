@@ -43,30 +43,61 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public boolean save(User user) {
-        return false;
+        return execute("INSERT INTO users(name,password,email,phoneNumber) VALUES (?, ?, ?, ?)",
+            user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber());
     }
 
     @Override
     public boolean deleteById(Long userId) {
-        return false;
+        return execute("DELETE FROM students WHERE id = (?)", userId.getClass());
     }
 
     @Override
     public boolean update(User user) {
-        return false;
+        return execute("UPDATE students set name = (?), password = (?), email = (?), "
+            + "phoneNumber = (?) WHERE id = (?)", user.getName(), user.getPassword(),
+            user.getEmail(), user.getPhoneNumber(), user.getId());
     }
 
     @Override
     public User getById(Long userId) {
-        return null;
+        return executeQuery("SELECT id,name,password,email,phoneNumber FROM users WHERE id=?",
+            resultSet -> {
+                if (resultSet == null) {
+                    return null;
+                }
+                resultSet.last();
+                if (resultSet.getRow() != 1) {
+                    return null;
+                }
+                User user = new User();
+                user.setId(resultSet.getLong("id"));
+                user.setName(resultSet.getString("name"));
+                user.setPassword(resultSet.getString("password"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPhoneNumber(resultSet.getString("phoneNumber"));
+                return user;
+            }, COMMON_EXCEPTION_HANDLER, userId);
     }
 
     @Override
     public User getByNameAndPassword(String userName, String password) {
         return executeQuery("SELECT id,name,password,email,phoneNumber FROM users WHERE name=? and password=?",
                 resultSet -> {
-                    // TODO
-                    return new User();
+                    if (resultSet == null) {
+                        return null;
+                    }
+                    resultSet.last();
+                    if (resultSet.getRow() != 1) {
+                        return null;
+                    }
+                    User user = new User();
+                    user.setId(resultSet.getLong("id"));
+                    user.setName(resultSet.getString("name"));
+                    user.setPassword(resultSet.getString("password"));
+                    user.setEmail(resultSet.getString("email"));
+                    user.setPhoneNumber(resultSet.getString("phoneNumber"));
+                    return user;
                 }, COMMON_EXCEPTION_HANDLER, userName, password);
     }
 
@@ -100,6 +131,32 @@ public class DatabaseUserRepository implements UserRepository {
             // 异常处理
         });
     }
+
+    protected boolean execute(String sql, Object... args) {
+        Connection connection = getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            for (int i = 0; i < args.length; i++) {
+                Object arg = args[i];
+                Class argType = arg.getClass();
+
+                Class wrapperType = wrapperToPrimitive(argType);
+
+                if (wrapperType == null) {
+                    wrapperType = argType;
+                }
+
+                String methodName = preparedStatementMethodMappings.get(argType);
+                Method method = PreparedStatement.class.getMethod(methodName, wrapperType);
+                method.invoke(preparedStatement, i + 1, args);
+            }
+            return preparedStatement.execute();
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
     /**
      * @param sql
