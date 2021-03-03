@@ -43,20 +43,20 @@ public class DatabaseUserRepository implements UserRepository {
 
     @Override
     public boolean save(User user) {
-        return execute("INSERT INTO users(name,password,email,phoneNumber) VALUES (?, ?, ?, ?)",
-            user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber());
+        return executeUpdate("INSERT INTO users(name,password,email,phoneNumber) VALUES (?, ?, ?, ?)",
+            user.getName(), user.getPassword(), user.getEmail(), user.getPhoneNumber()) == 1;
     }
 
     @Override
     public boolean deleteById(Long userId) {
-        return execute("DELETE FROM students WHERE id = (?)", userId.getClass());
+        return executeUpdate("DELETE FROM students WHERE id = (?)", userId.getClass()) == 1;
     }
 
     @Override
     public boolean update(User user) {
-        return execute("UPDATE students set name = (?), password = (?), email = (?), "
+        return executeUpdate("UPDATE students set name = (?), password = (?), email = (?), "
             + "phoneNumber = (?) WHERE id = (?)", user.getName(), user.getPassword(),
-            user.getEmail(), user.getPhoneNumber(), user.getId());
+            user.getEmail(), user.getPhoneNumber(), user.getId()) == 1;
     }
 
     @Override
@@ -66,16 +66,22 @@ public class DatabaseUserRepository implements UserRepository {
                 if (resultSet == null) {
                     return null;
                 }
-                resultSet.last();
-                if (resultSet.getRow() != 1) {
-                    return null;
+
+                int rowIdx = 0;
+                User user = null;
+                while (resultSet.next()) {
+                    if (rowIdx > 0) {
+                        return null;
+                    }
+                    user = new User();
+                    user.setId(resultSet.getLong("id"));
+                    user.setName(resultSet.getString("name"));
+                    user.setPassword(resultSet.getString("password"));
+                    user.setEmail(resultSet.getString("email"));
+                    user.setPhoneNumber(resultSet.getString("phoneNumber"));
+                    rowIdx++;
                 }
-                User user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setName(resultSet.getString("name"));
-                user.setPassword(resultSet.getString("password"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPhoneNumber(resultSet.getString("phoneNumber"));
+
                 return user;
             }, COMMON_EXCEPTION_HANDLER, userId);
     }
@@ -87,16 +93,20 @@ public class DatabaseUserRepository implements UserRepository {
                     if (resultSet == null) {
                         return null;
                     }
-                    resultSet.last();
-                    if (resultSet.getRow() != 1) {
-                        return null;
+                    int rowIdx = 0;
+                    User user = null;
+                    while (resultSet.next()) {
+                        if (rowIdx > 0) {
+                            return null;
+                        }
+                        user = new User();
+                        user.setId(resultSet.getLong("id"));
+                        user.setName(resultSet.getString("name"));
+                        user.setPassword(resultSet.getString("password"));
+                        user.setEmail(resultSet.getString("email"));
+                        user.setPhoneNumber(resultSet.getString("phoneNumber"));
+                        rowIdx++;
                     }
-                    User user = new User();
-                    user.setId(resultSet.getLong("id"));
-                    user.setName(resultSet.getString("name"));
-                    user.setPassword(resultSet.getString("password"));
-                    user.setEmail(resultSet.getString("email"));
-                    user.setPhoneNumber(resultSet.getString("phoneNumber"));
                     return user;
                 }, COMMON_EXCEPTION_HANDLER, userName, password);
     }
@@ -132,7 +142,7 @@ public class DatabaseUserRepository implements UserRepository {
         });
     }
 
-    protected boolean execute(String sql, Object... args) {
+    protected int executeUpdate(String sql, Object... args) {
         Connection connection = getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -147,13 +157,13 @@ public class DatabaseUserRepository implements UserRepository {
                 }
 
                 String methodName = preparedStatementMethodMappings.get(argType);
-                Method method = PreparedStatement.class.getMethod(methodName, wrapperType);
-                method.invoke(preparedStatement, i + 1, args);
+                Method method = PreparedStatement.class.getMethod(methodName, int.class, wrapperType);
+                method.invoke(preparedStatement, i + 1, arg);
             }
-            return preparedStatement.execute();
+            return preparedStatement.executeUpdate();
         } catch (Throwable e) {
             e.printStackTrace();
-            return false;
+            return 0;
         }
     }
 
@@ -181,8 +191,8 @@ public class DatabaseUserRepository implements UserRepository {
 
                 // Boolean -> boolean
                 String methodName = preparedStatementMethodMappings.get(argType);
-                Method method = PreparedStatement.class.getMethod(methodName, wrapperType);
-                method.invoke(preparedStatement, i + 1, args);
+                Method method = PreparedStatement.class.getMethod(methodName, int.class, wrapperType);
+                method.invoke(preparedStatement, i + 1, arg);
             }
             ResultSet resultSet = preparedStatement.executeQuery();
             // 返回一个 POJO List -> ResultSet -> POJO List
@@ -212,7 +222,5 @@ public class DatabaseUserRepository implements UserRepository {
 
         preparedStatementMethodMappings.put(Long.class, "setLong"); // long
         preparedStatementMethodMappings.put(String.class, "setString"); //
-
-
     }
 }

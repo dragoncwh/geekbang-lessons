@@ -48,6 +48,17 @@
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.1</version>
+                <configuration>
+                    <!--<additionalConfigFilesDir>/${project.artifactId}-${project.version}</additionalConfigFilesDir>-->
+                    <!--<contextFile>${project.basedir}/src/main/webapp/WEB-INF/context.xml</contextFile>-->
+                    <!--<path>/${project.artifactId}-${project.version}</path>-->
+                    <!--<defaultContextFile>${project.basedir}/src/main/webapp/WEB-INF/context.xml</defaultContextFile>-->
+                    <!--<contextFile>/Users/wenhuichen/Documents/my/interview/geekbang/spring/homework/geekbang-lessons/projects/stage-0/user-platform/user-web/src/main/webapp/WEB-INF/context.xml</contextFile>-->
+                    <!--<defaultContextFile>/Users/wenhuichen/Documents/my/interview/geekbang/spring/homework/geekbang-lessons/projects/stage-0/user-platform/user-web/src/main/webapp/WEB-INF/context.xml</defaultContextFile>-->
+                    <!--<contextFile>${project.build.directory}/${project.build.finalName}/WEB-INF/context.xml</contextFile>-->
+                    <enableNaming>true</enableNaming>
+                    <useNaming>true</useNaming>
+                </configuration>
                 <executions>
                     <execution>
                         <id>tomcat-run</id>

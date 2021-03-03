@@ -52,7 +52,7 @@ public class User {
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return phoneNumber == null ? "" : phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
