@@ -35,7 +35,6 @@ public class ServletContextConfigInitializer implements ServletContextListener {
         configBuilder.addDefaultSources();
         // 通过发现配置源（动态的）
         configBuilder.addDiscoveredConverters();
-        configBuilder.withConverter(String.class, 100, new StringConverter());
         // 增加扩展配置源（基于 Servlet 引擎）
         configBuilder.withSources(servletContextConfigSource);
         // 获取 Config
