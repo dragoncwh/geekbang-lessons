@@ -1,6 +1,11 @@
 package org.geektimes.web.mvc;
 
+import java.util.logging.Logger;
+import javax.servlet.ServletContainerInitializer;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.spi.ConfigProviderResolver;
+import org.geektimes.configuration.microprofile.config.source.servlet.ServletContextConfigInitializer;
 import org.geektimes.web.mvc.controller.Controller;
 import org.geektimes.web.mvc.controller.PageController;
 import org.geektimes.web.mvc.controller.RestController;
@@ -29,6 +34,8 @@ import static org.apache.commons.lang.StringUtils.substringAfter;
 
 public class FrontControllerServlet extends HttpServlet {
 
+    private static final Logger logger = Logger.getLogger(FrontControllerServlet.class.getName());
+
     /**
      * 请求路径和 Controller 的映射关系缓存
      */
@@ -45,6 +52,19 @@ public class FrontControllerServlet extends HttpServlet {
      * @param servletConfig
      */
     public void init(ServletConfig servletConfig) {
+        ServletContext servletContext = servletConfig.getServletContext();
+        ConfigProviderResolver configProviderResolver
+            = (ConfigProviderResolver) servletContext.getAttribute(ServletContextConfigInitializer.CONTEXT_NAME);
+        Config config = configProviderResolver.getConfig();
+        logger.info("My JAVA_HOME config via servlet context: "
+            + config.getValue("JAVA_HOME", String.class));
+
+        ConfigProviderResolver configProviderResolverViaThreadLocal
+            = ServletContextConfigInitializer.configProviderResolverThreadLocal.get();
+        Config configViaThreadLocal = configProviderResolverViaThreadLocal.getConfig();
+        logger.info("My JAVA_HOME config via ThreadLocal: "
+            + configViaThreadLocal.getValue("JAVA_HOME", String.class));
+
         initHandleMethods();
     }
 
