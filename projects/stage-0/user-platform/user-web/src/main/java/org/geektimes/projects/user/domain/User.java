@@ -6,6 +6,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Length.List;
 
 import static javax.persistence.GenerationType.AUTO;
 
@@ -20,21 +22,22 @@ public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = AUTO)
-    @NotNull
+    @Min(1)
+    // @NotNull
     private Long id;
 
     @Column
     private String name;
 
     @Column
-    @Max(32)
-    @Min(6)
+    @Length(min = 6, max = 32, message = "密码必须大于等于6位，小于等于32位")
     private String password;
 
     @Column
     private String email;
 
     @Column
+    @Length(min = 11, max = 11, message = "请输入正确的手机号")
     private String phoneNumber;
 
     public Long getId() {

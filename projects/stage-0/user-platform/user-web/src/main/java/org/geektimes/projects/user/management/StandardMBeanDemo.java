@@ -1,9 +1,8 @@
 package org.geektimes.projects.user.management;
 
-import org.geektimes.projects.user.domain.User;
-
 import javax.management.MBeanInfo;
 import javax.management.StandardMBean;
+import org.geektimes.projects.user.domain.User;
 
 public class StandardMBeanDemo {
 

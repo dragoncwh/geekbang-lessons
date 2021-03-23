@@ -1,13 +1,14 @@
 package org.geektimes.projects.user.web.listener;
 
-import org.geektimes.context.JndiComponentContext;
+import javax.annotation.PreDestroy;
+import org.geektimes.context.ComponentContext;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 /**
- * {@link JndiComponentContext} 初始化器
+ * {@link ComponentContext} 初始化器
  * ContextLoaderListener
  */
 public class ComponentContextInitializerListener implements ServletContextListener {
@@ -15,9 +16,10 @@ public class ComponentContextInitializerListener implements ServletContextListen
     private ServletContext servletContext;
 
     @Override
+    @PreDestroy
     public void contextInitialized(ServletContextEvent sce) {
         this.servletContext = sce.getServletContext();
-        JndiComponentContext context = new JndiComponentContext();
+        ComponentContext context = new ComponentContext();
         context.init(servletContext);
     }
 

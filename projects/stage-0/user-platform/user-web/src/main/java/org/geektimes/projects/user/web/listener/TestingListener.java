@@ -1,6 +1,6 @@
 package org.geektimes.projects.user.web.listener;
 
-import org.geektimes.context.JndiComponentContext;
+import org.geektimes.context.ComponentContext;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
@@ -21,7 +21,7 @@ public class TestingListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        JndiComponentContext context = JndiComponentContext.getInstance();
+        ComponentContext context = ComponentContext.getInstance();
         DBConnectionManager dbConnectionManager = context.getComponent("bean/DBConnectionManager");
         dbConnectionManager.getConnection();
         testPropertyFromServletContext(sce.getServletContext());
@@ -35,13 +35,13 @@ public class TestingListener implements ServletContextListener {
     private void testPropertyFromServletContext(ServletContext servletContext) {
         String propertyName = "application.name";
         logger.info("ServletContext Property[" + propertyName + "] : "
-                + servletContext.getInitParameter(propertyName));
+            + servletContext.getInitParameter(propertyName));
     }
 
-    private void testPropertyFromJNDI(JndiComponentContext context) {
+    private void testPropertyFromJNDI(ComponentContext context) {
         String propertyName = "maxValue";
         logger.info("JNDI Property[" + propertyName + "] : "
-                + context.lookupComponent(propertyName));
+            + context.lookupComponent(propertyName));
     }
 
     private void testUser(EntityManager entityManager) {
@@ -49,7 +49,7 @@ public class TestingListener implements ServletContextListener {
         user.setName("小马哥");
         user.setPassword("******");
         user.setEmail("mercyblitz@gmail.com");
-        user.setPhoneNumber("abcdefg");
+        user.setPhoneNumber("12345678910");
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(user);

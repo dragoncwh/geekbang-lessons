@@ -7,5 +7,11 @@
     <persistence-unit name="emf" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 <!--        <mapping-file></mapping-file>-->
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.hbm2ddl.import_files_sql_extractor" value="org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor" />
+            <property name="javax.persistence.sql-load-script-source" value="META-INF/db/DDL/users_table_ddl.sql"/>
+        </properties>
     </persistence-unit>
 </persistence>

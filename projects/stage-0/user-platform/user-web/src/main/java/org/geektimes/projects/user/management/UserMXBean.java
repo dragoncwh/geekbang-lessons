@@ -1,8 +1,15 @@
 package org.geektimes.projects.user.management;
 
-import javax.management.*;
 import java.util.HashMap;
 import java.util.Map;
+import javax.management.Attribute;
+import javax.management.AttributeList;
+import javax.management.AttributeNotFoundException;
+import javax.management.DynamicMBean;
+import javax.management.InvalidAttributeValueException;
+import javax.management.MBeanException;
+import javax.management.MBeanInfo;
+import javax.management.ReflectionException;
 
 /**
  * 动态结构，无固定接口类型（运行时确定）
