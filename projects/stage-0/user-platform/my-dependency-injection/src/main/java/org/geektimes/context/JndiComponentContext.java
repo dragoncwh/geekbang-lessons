@@ -58,9 +58,11 @@ public class JndiComponentContext implements ComponentContext {
     }
 
     public void init(ServletContext servletContext) throws RuntimeException {
+        logger.info("独立模块ComponentContext初始化中...");
         JndiComponentContext.servletContext = servletContext;
         servletContext.setAttribute(CONTEXT_NAME, this);
         this.init();
+        logger.info("独立模块ComponentContext初始化完成");
     }
 
     /**

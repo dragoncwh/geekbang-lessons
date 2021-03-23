@@ -7,6 +7,10 @@ import java.util.List;
  */
 public interface ComponentContext {
 
+    static ComponentContext getInstance() {
+        return JndiComponentContext.getInstance();
+    }
+
     // 生命周期方法
 
     /**

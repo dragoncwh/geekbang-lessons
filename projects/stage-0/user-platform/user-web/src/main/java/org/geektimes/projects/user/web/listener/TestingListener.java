@@ -1,6 +1,7 @@
 package org.geektimes.projects.user.web.listener;
 
 import org.geektimes.context.ComponentContext;
+import org.geektimes.context.JndiComponentContext;
 import org.geektimes.projects.user.domain.User;
 import org.geektimes.projects.user.sql.DBConnectionManager;
 
@@ -25,7 +26,7 @@ public class TestingListener implements ServletContextListener {
         DBConnectionManager dbConnectionManager = context.getComponent("bean/DBConnectionManager");
         dbConnectionManager.getConnection();
         testPropertyFromServletContext(sce.getServletContext());
-        testPropertyFromJNDI(context);
+        // testPropertyFromJNDI(context);
         testUser(dbConnectionManager.getEntityManager());
         logger.info("所有的 JNDI 组件名称：[");
         context.getComponentNames().forEach(logger::info);
@@ -38,11 +39,11 @@ public class TestingListener implements ServletContextListener {
             + servletContext.getInitParameter(propertyName));
     }
 
-    private void testPropertyFromJNDI(ComponentContext context) {
-        String propertyName = "maxValue";
-        logger.info("JNDI Property[" + propertyName + "] : "
-            + context.lookupComponent(propertyName));
-    }
+    // private void testPropertyFromJNDI(ComponentContext context) {
+    //     String propertyName = "maxValue";
+    //     logger.info("JNDI Property[" + propertyName + "] : "
+    //         + context.lookupComponent(propertyName));
+    // }
 
     private void testUser(EntityManager entityManager) {
         User user = new User();
